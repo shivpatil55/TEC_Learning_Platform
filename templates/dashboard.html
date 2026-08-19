@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}Dashboard — TEC{% endblock %}
+{% block content %}
+<div class="section-hero" style="padding-top:30px;">
+    <h1>Hi {{ current_user['full_name'] }} 👋</h1>
+    <p>Pick up where you left off, or explore a new section.</p>
+</div>
+
+{% for section, courses in data %}
+<h2 style="color: var(--deep-2); margin-top: 36px;">
+    <a href="{{ url_for('section_view', slug=section['slug']) }}">{{ section['icon'] }} {{ section['name'] }}</a>
+</h2>
+<p style="color: var(--text-muted); margin-top:-6px;">{{ section['description'] }}</p>
+<div class="grid">
+    {% for course in courses %}
+    <a href="{{ url_for('course_view', slug=course['slug']) }}" class="card course-card">
+        <div class="icon">{{ course['icon'] }}</div>
+        <h3>{{ course['title'] }}</h3>
+        <p>{{ course['description'] }}</p>
+    </a>
+    {% endfor %}
+</div>
+{% endfor %}
+{% endblock %}

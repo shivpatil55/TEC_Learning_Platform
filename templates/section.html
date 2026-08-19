@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}{{ section['name'] }} — TEC{% endblock %}
+{% block content %}
+<div class="section-hero" style="padding-top:30px;">
+    <div class="letters"><div class="letter-pill {{ section['letter']|lower }}">{{ section['letter'] }}</div></div>
+    <h1>{{ section['icon'] }} {{ section['name'] }}</h1>
+    <p>{{ section['description'] }}</p>
+</div>
+
+<div class="grid">
+    {% for course in courses %}
+    {% set done, total = course_progress[course['id']] %}
+    <a href="{{ url_for('course_view', slug=course['slug']) }}" class="card course-card">
+        <div class="icon">{{ course['icon'] }}</div>
+        <h3>{{ course['title'] }}</h3>
+        <p>{{ course['description'] }}</p>
+        <div class="progress-bar"><div class="progress-bar-fill" style="width: {{ (done/total*100) if total else 0 }}%;"></div></div>
+        <span class="badge">{{ done }}/{{ total }} lessons complete</span>
+    </a>
+    {% endfor %}
+</div>
+{% endblock %}

@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% block title %}My Profile — TEC{% endblock %}
+{% block content %}
+<div class="card profile-header">
+    <div class="profile-avatar-wrap">
+        <div class="profile-avatar">
+            {% if user['profile_photo'] %}
+                <img src="{{ url_for('static', filename=user['profile_photo']) }}" alt="{{ user['full_name'] }}">
+            {% else %}
+                {{ user['full_name'][0]|upper }}
+            {% endif %}
+        </div>
+        <label for="photoInput" class="avatar-edit-btn" title="Change profile photo">📷</label>
+        <form id="photoForm" method="POST" action="{{ url_for('upload_profile_photo') }}" enctype="multipart/form-data">
+            <input id="photoInput" type="file" name="photo" accept="image/png,image/jpeg,image/gif,image/webp"
+                   style="display:none;" onchange="document.getElementById('photoForm').submit();">
+        </form>
+    </div>
+    <div>
+        <h1 style="margin:0; color: var(--deep-2);">{{ user['full_name'] }}</h1>
+        <p style="margin:4px 0 0; color: var(--text-muted);">@{{ user['username'] }} &middot; {{ user['email'] }}</p>
+        <p style="margin:4px 0 0; color: var(--text-muted); font-size:0.85rem;">Member since {{ user['created_at'] }}</p>
+        <label for="photoInput" class="btn btn-outline" style="margin-top:10px; padding:7px 14px; font-size:0.82rem; cursor:pointer;">Change Photo</label>
+    </div>
+</div>
+
+<h2 style="color: var(--deep-2);">🎓 Certificates</h2>
+{% if certificates %}
+<div class="cert-strip">
+    {% for cert in certificates %}
+    <div class="cert-chip">
+        <div style="font-size:1.4rem;">{{ cert['course_icon'] }}</div>
+        <div style="font-weight:800; margin:6px 0 2px;">{{ cert['course_title'] }}</div>
+        <div style="font-size:0.8rem;">Issued {{ cert['issued_at'] }}</div>
+        <a class="btn btn-outline" style="margin-top:10px; padding:6px 12px; font-size:0.8rem;"
+           href="{{ url_for('download_certificate', course_id=cert['course_id']) }}">Download PDF</a>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<p style="color: var(--text-muted);">No certificates yet — complete a course to earn your first one!</p>
+{% endif %}
+
+<h2 style="color: var(--deep-2);">🚀 Career Path</h2>
+<div class="card" style="margin-bottom: 24px;">
+    <h3 style="margin-top:0;">Ongoing Courses</h3>
+    {% if ongoing %}
+        {% for course, done, total in ongoing %}
+        <div class="path-row">
+            <div class="dot"></div>
+            <div style="flex:1;">
+                <a href="{{ url_for('course_view', slug=course['slug']) }}" style="font-weight:700; color: var(--deep-2);">{{ course['icon'] }} {{ course['title'] }}</a>
+                <div class="progress-bar" style="margin-top:6px;"><div class="progress-bar-fill" style="width:{{ done/total*100 }}%;"></div></div>
+            </div>
+            <span class="badge">{{ done }}/{{ total }}</span>
+        </div>
+        {% endfor %}
+    {% else %}
+        <p style="color: var(--text-muted);">No courses in progress. <a href="{{ url_for('dashboard') }}">Start one now &rarr;</a></p>
+    {% endif %}
+
+    <h3>Completed Courses</h3>
+    {% if completed %}
+        {% for course in completed %}
+        <div class="path-row complete">
+            <div class="dot"></div>
+            <div style="flex:1;">
+                <a href="{{ url_for('course_view', slug=course['slug']) }}" style="font-weight:700; color: var(--deep-2);">{{ course['icon'] }} {{ course['title'] }}</a>
+            </div>
+            <span class="badge">✓ Done</span>
+        </div>
+        {% endfor %}
+    {% else %}
+        <p style="color: var(--text-muted);">No completed courses yet.</p>
+    {% endif %}
+</div>
+{% endblock %}

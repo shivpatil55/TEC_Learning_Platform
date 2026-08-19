@@ -1,0 +1,19 @@
+# Python
+__pycache__/
+*.pyc
+venv/
+env/
+.venv/
+
+# Database (each deployment should generate its own)
+tec.db
+
+# User-uploaded content
+static/uploads/profile_photos/*
+!static/uploads/profile_photos/.gitkeep
+
+# OS / editor junk
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+{% block title %}Admin Dashboard — TEC{% endblock %}
+{% block content %}
+<div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px;">
+    <h1 style="color: var(--deep-2); margin:0;">📊 Admin Dashboard</h1>
+    <a href="{{ url_for('admin_logout') }}" class="btn btn-outline">Log Out of Admin</a>
+</div>
+
+<div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); margin-top:20px;">
+    <div class="card" style="text-align:center;">
+        <div style="font-size:1.9rem; font-weight:800; color: var(--deep-2);">{{ total_users }}</div>
+        <div class="badge" style="margin-top:6px;">Total Users</div>
+    </div>
+    <div class="card" style="text-align:center;">
+        <div style="font-size:1.9rem; font-weight:800; color: var(--deep-2);">{{ total_logins }}</div>
+        <div class="badge" style="margin-top:6px;">Total Logins</div>
+    </div>
+    <div class="card" style="text-align:center;">
+        <div style="font-size:1.9rem; font-weight:800; color: var(--deep-2);">{{ total_page_views }}</div>
+        <div class="badge" style="margin-top:6px;">Homepage Visits</div>
+    </div>
+    <div class="card" style="text-align:center;">
+        <div style="font-size:1.9rem; font-weight:800; color: var(--deep-2);">{{ total_lessons_done }}</div>
+        <div class="badge" style="margin-top:6px;">Lessons Completed</div>
+    </div>
+    <div class="card" style="text-align:center;">
+        <div style="font-size:1.9rem; font-weight:800; color: var(--deep-2);">{{ total_certs }}</div>
+        <div class="badge" style="margin-top:6px;">Certificates Issued</div>
+    </div>
+</div>
+
+<div class="card" style="margin-top:24px;">
+    <h3 style="margin-top:0; color: var(--deep-2);">New Signups &amp; Logins — Last 14 Days</h3>
+    <canvas id="activityChart" height="90"></canvas>
+</div>
+
+<div class="card" style="margin-top:24px; overflow-x:auto;">
+    <h3 style="margin-top:0; color: var(--deep-2);">All Users ({{ user_rows|length }})</h3>
+    <table style="width:100%; border-collapse: collapse; font-size:0.88rem;">
+        <thead>
+            <tr style="text-align:left; border-bottom: 2px solid var(--border);">
+                <th style="padding:8px 6px;">Name</th>
+                <th style="padding:8px 6px;">Username</th>
+                <th style="padding:8px 6px;">Email</th>
+                <th style="padding:8px 6px;">Joined</th>
+                <th style="padding:8px 6px;">Last Login</th>
+                <th style="padding:8px 6px; text-align:center;">Logins</th>
+                <th style="padding:8px 6px; text-align:center;">Lessons Done</th>
+                <th style="padding:8px 6px;">Courses Completed</th>
+                <th style="padding:8px 6px; text-align:center;">Ongoing</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in user_rows %}
+            <tr style="border-bottom: 1px solid var(--border);">
+                <td style="padding:8px 6px; font-weight:600;">{{ row.user['full_name'] }}</td>
+                <td style="padding:8px 6px; color: var(--text-muted);">@{{ row.user['username'] }}</td>
+                <td style="padding:8px 6px; color: var(--text-muted);">{{ row.user['email'] }}</td>
+                <td style="padding:8px 6px; white-space:nowrap;">{{ row.user['created_at'] }}</td>
+                <td style="padding:8px 6px; white-space:nowrap;">{{ row.last_login or '—' }}</td>
+                <td style="padding:8px 6px; text-align:center;">{{ row.login_count }}</td>
+                <td style="padding:8px 6px; text-align:center;">{{ row.lessons_done }}</td>
+                <td style="padding:8px 6px;">
+                    {% if row.completed_titles %}
+                        <span class="badge" title="{{ row.completed_titles|join(', ') }}">{{ row.completed_count }} completed</span>
+                    {% else %}
+                        <span style="color: var(--text-muted);">None yet</span>
+                    {% endif %}
+                </td>
+                <td style="padding:8px 6px; text-align:center;">{{ row.ongoing_count }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<script>
+    const ctx = document.getElementById('activityChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: {{ day_labels|tojson }},
+            datasets: [
+                {
+                    label: 'New Signups',
+                    data: {{ signups_series|tojson }},
+                    borderColor: '#0277BD',
+                    backgroundColor: 'rgba(2,119,189,0.15)',
+                    tension: 0.3,
+                    fill: true,
+                },
+                {
+                    label: 'Logins',
+                    data: {{ logins_series|tojson }},
+                    borderColor: '#29B6F6',
+                    backgroundColor: 'rgba(41,182,246,0.12)',
+                    tension: 0.3,
+                    fill: true,
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            plugins: { legend: { position: 'top' } },
+            scales: { y: { beginAtZero: true, ticks: { precision: 0 } } }
+        }
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}{{ course['title'] }} — TEC{% endblock %}
+{% block content %}
+<p><a href="{{ url_for('section_view', slug=section['slug']) }}">&larr; Back to {{ section['name'] }}</a></p>
+
+<div class="card" style="margin-bottom: 20px;">
+    <div style="display:flex; align-items:center; gap:14px;">
+        <div style="font-size:2.2rem;">{{ course['icon'] }}</div>
+        <div>
+            <h1 style="margin:0; color: var(--deep-2);">{{ course['title'] }}</h1>
+            <p style="margin:4px 0 0; color: var(--text-muted);">{{ course['description'] }}</p>
+        </div>
+    </div>
+    <div class="progress-bar" style="margin-top:16px;">
+        <div class="progress-bar-fill" style="width: {{ (done_ids|length / lessons|length * 100) if lessons|length else 0 }}%;"></div>
+    </div>
+    <p style="color: var(--text-muted); font-size:0.9rem;">{{ done_ids|length }} / {{ lessons|length }} lessons completed</p>
+
+    {% if all_done %}
+        {% if certificate %}
+            <a class="btn btn-success" href="{{ url_for('download_certificate', course_id=course['id']) }}">🎓 Download Your Certificate</a>
+        {% else %}
+            <form method="POST" action="{{ url_for('claim_certificate', course_id=course['id']) }}">
+                <button type="submit" class="btn btn-success">🎓 Claim Your Certificate</button>
+            </form>
+        {% endif %}
+    {% endif %}
+</div>
+
+<h2 style="color: var(--deep-2);">Lessons</h2>
+<div class="lesson-list">
+    {% for lesson in lessons %}
+    <a class="lesson-row" href="{{ url_for('lesson_view', lesson_id=lesson['id']) }}">
+        <div class="left">
+            <div class="check {{ 'done' if lesson['id'] in done_ids else '' }}">{{ '✓' if lesson['id'] in done_ids else loop.index }}</div>
+            <div>{{ lesson['title'] }}</div>
+        </div>
+        <span class="badge">{{ 'Completed' if lesson['id'] in done_ids else 'Start' }}</span>
+    </a>
+    {% endfor %}
+</div>
+{% endblock %}

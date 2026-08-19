@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}Certificate Verification — TEC{% endblock %}
+{% block content %}
+<div class="auth-wrap" style="min-height: 60vh;">
+    <div class="card auth-card" style="max-width: 480px; text-align: center;">
+        {% if cert %}
+            <div style="font-size: 2.6rem;">✅</div>
+            <h2 style="color: var(--success); margin-top: 6px;">Certificate Verified</h2>
+            <p style="color: var(--text-muted); margin-top: -6px;">This is a genuine certificate issued by TEC — The Learning Platform.</p>
+
+            <div class="card" style="background: var(--surface-2); margin-top: 18px; text-align: left;">
+                <p style="margin: 4px 0;"><strong>Name:</strong> {{ cert['full_name'] }}</p>
+                <p style="margin: 4px 0;"><strong>Course:</strong> {{ cert['course_icon'] }} {{ cert['course_title'] }}</p>
+                <p style="margin: 4px 0;"><strong>Track:</strong> {{ cert['section_name'] }}</p>
+                <p style="margin: 4px 0;"><strong>Issued:</strong> {{ cert['issued_at'] }}</p>
+                <p style="margin: 4px 0;"><strong>Certificate ID:</strong> {{ cert['certificate_code'] }}</p>
+            </div>
+        {% else %}
+            <div style="font-size: 2.6rem;">⚠️</div>
+            <h2 style="color: var(--error); margin-top: 6px;">Certificate Not Found</h2>
+            <p style="color: var(--text-muted);">
+                No certificate matches the code <strong>{{ code }}</strong>. It may have been entered
+                incorrectly, or this isn't a valid TEC certificate.
+            </p>
+        {% endif %}
+        <a href="{{ url_for('index') }}" class="btn btn-primary" style="margin-top: 18px;">Go to TEC Homepage</a>
+    </div>
+</div>
+{% endblock %}

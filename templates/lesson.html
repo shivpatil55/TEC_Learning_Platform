@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block title %}{{ lesson['title'] }} — TEC{% endblock %}
+{% block content %}
+<p><a href="{{ url_for('course_view', slug=course['slug']) }}">&larr; Back to {{ course['title'] }}</a></p>
+
+<div class="card">
+    <span class="badge">{{ section['name'] }} &middot; {{ course['title'] }}</span>
+    <h1 style="color: var(--deep-2); margin-top:10px;">{{ lesson['title'] }}</h1>
+
+    <div class="lesson-content">
+        {% for para in lesson['content'].split('\n\n') %}
+            {% if para.strip().startswith('•') %}
+                <ul>
+                {% for line in para.split('\n') %}
+                    {% if line.strip() %}<li>{{ line.strip().lstrip('•').strip() }}</li>{% endif %}
+                {% endfor %}
+                </ul>
+            {% else %}
+                <p>{{ para }}</p>
+            {% endif %}
+        {% endfor %}
+
+        {% if lesson['image_url'] %}
+        <img src="{{ url_for('static', filename='images/' ~ lesson['image_url']) }}" alt="{{ lesson['title'] }} example">
+        {% endif %}
+
+        {% if lesson['code_example'] %}
+        <h3 style="color: var(--deep-2);">Code Example</h3>
+        <div class="code-block">{{ lesson['code_example'] }}</div>
+        {% endif %}
+
+        {% if lesson['video_url'] %}
+        <div class="video-embed">
+            <span style="font-size:1.4rem;">▶️</span>
+            <div>
+                <div style="font-weight:700;">Watch a video on this topic</div>
+                <a href="{{ lesson['video_url'] }}" target="_blank" rel="noopener">{{ lesson['video_url'] }}</a>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    {% if is_done %}
+        <button class="btn" disabled>✓ Completed</button>
+    {% else %}
+        <form method="POST" action="{{ url_for('complete_lesson', lesson_id=lesson['id']) }}">
+            <button type="submit" class="btn btn-success">Mark as Complete</button>
+        </form>
+    {% endif %}
+
+    <div style="display:flex; justify-content:space-between; margin-top:24px;">
+        {% if prev_lesson %}
+            <a class="btn btn-outline" href="{{ url_for('lesson_view', lesson_id=prev_lesson['id']) }}">&larr; {{ prev_lesson['title'] }}</a>
+        {% else %}<span></span>{% endif %}
+        {% if next_lesson %}
+            <a class="btn btn-primary" href="{{ url_for('lesson_view', lesson_id=next_lesson['id']) }}">{{ next_lesson['title'] }} &rarr;</a>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

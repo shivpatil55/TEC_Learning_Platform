@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}TEC - The Learning Platform{% endblock %}
+{% block content %}
+<div class="section-hero">
+    <h1>Learn Trading, Editing &amp; Coding — all in one place.</h1>
+    <p>TEC is a learning platform bringing together financial markets, creative editing, and
+       programming — with bite-sized lessons, real code &amp; chart examples, videos, and
+       certificates when you finish a course.</p>
+    <div class="letters">
+        <div class="letter-pill t">T</div>
+        <div class="letter-pill e">E</div>
+        <div class="letter-pill c">C</div>
+    </div>
+    {% if current_user %}
+        <a href="{{ url_for('dashboard') }}" class="btn btn-primary">Go to Dashboard</a>
+    {% else %}
+        <a href="{{ url_for('signup') }}" class="btn btn-primary">Get Started — Sign Up Free</a>
+        <a href="{{ url_for('login') }}" class="btn btn-outline" style="margin-left:10px;">Log In</a>
+    {% endif %}
+</div>
+
+<div class="grid">
+    <div class="section-card trading">
+        <div class="icon">📈</div>
+        <h2>T — Trading</h2>
+        <p>Chart patterns, candlestick patterns, forex, crypto and commodities — learn to read the markets.</p>
+        <span class="go">6 courses</span>
+    </div>
+    <div class="section-card editing">
+        <div class="icon">🎬</div>
+        <h2>E — Editing</h2>
+        <p>Graphic design, video editing, animation and photo editing — bring your creative ideas to life.</p>
+        <span class="go">4 courses</span>
+    </div>
+    <div class="section-card coding">
+        <div class="icon">💻</div>
+        <h2>C — Coding</h2>
+        <p>Java, Python, C, C++, .NET, JavaScript, HTML &amp; CSS — with real code examples.</p>
+        <span class="go">8 courses</span>
+    </div>
+</div>
+{% endblock %}

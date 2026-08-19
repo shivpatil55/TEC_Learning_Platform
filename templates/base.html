@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{% block title %}TEC - The Learning Platform{% endblock %}</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+<video class="site-bg-video" autoplay muted loop playsinline
+       poster="{{ url_for('static', filename='images/site-bg-poster.jpg') }}">
+    <source src="{{ url_for('static', filename='videos/site-bg.mp4') }}" type="video/mp4">
+</video>
+<div class="site-bg-overlay"></div>
+
+<nav class="navbar">
+    <a href="{{ url_for('index') }}" class="brand">
+        <span class="logo-badge">TEC</span>
+        <span>TEC<br><small>Trading · Editing · Coding</small></span>
+    </a>
+    <div class="nav-links">
+        {% if current_user %}
+            <a class="nav-item" href="{{ url_for('dashboard') }}">Dashboard</a>
+            <a class="nav-item" href="{{ url_for('section_view', slug='trading') }}">Trading</a>
+            <a class="nav-item" href="{{ url_for('section_view', slug='editing') }}">Editing</a>
+            <a class="nav-item" href="{{ url_for('section_view', slug='coding') }}">Coding</a>
+            <button class="theme-toggle" id="themeToggleBtn" onclick="toggleTheme()">🌙 Night Mode</button>
+            <a href="{{ url_for('profile') }}" class="profile-btn" title="{{ current_user['full_name'] }}">
+                {% if current_user['profile_photo'] %}
+                    <img src="{{ url_for('static', filename=current_user['profile_photo']) }}" alt="Profile photo">
+                {% else %}
+                    {{ current_user['full_name'][0]|upper }}
+                {% endif %}
+            </a>
+            <a class="nav-item" href="{{ url_for('logout') }}">Logout</a>
+        {% else %}
+            <button class="theme-toggle" id="themeToggleBtn" onclick="toggleTheme()">🌙 Night Mode</button>
+            <a class="nav-item" href="{{ url_for('login') }}">Log in</a>
+            <a href="{{ url_for('signup') }}" class="btn btn-primary">Sign Up</a>
+        {% endif %}
+    </div>
+</nav>
+
+<div class="container">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="flash {{ category }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+    {% block content %}{% endblock %}
+</div>
+
+<footer>TEC — The Learning Platform &middot; Trading · Editing · Coding &middot; Built with Flask &amp; SQLite</footer>
+
+<script src="{{ url_for('static', filename='js/theme.js') }}"></script>
+<script>
+    (function () {
+        var v = document.querySelector('.site-bg-video');
+        if (v && window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+            v.pause();
+        }
+    })();
+</script>
+</body>
+</html>
